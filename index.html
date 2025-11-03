@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Banda Vonyuchiy Veter</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
+      color: #2c3e50;
+      padding: 50px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .deco {
+      position: absolute;
+      opacity: 0.03;
+      z-index: -1;
+      font-size: 24px;
+      line-height: 1.9;
+    }
+    .deco.top-left {
+      top: 8%;
+      left: 5%;
+      transform: rotate(-8deg);
+    }
+    .deco.bottom-right {
+      bottom: 10%;
+      right: 5%;
+      transform: rotate(10deg);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      max-width: 700px;
+    }
+
+    h1 {
+      font-weight: 800;
+      font-size: 40px;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.8px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #5a6b8c;
+      margin-top: 6px;
+    }
+
+    /* Поиск */
+    .search-box {
+      margin: 25px 0 40px;
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      justify-content: center;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 18px 0 0 18px;
+      font-size: 16px;
+      box-shadow: 0 4px 16px rgba(106, 17, 203, 0.12);
+      outline: none;
+    }
+    .search-box button {
+      padding: 0 24px;
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      color: white;
+      border: none;
+      border-radius: 0 18px 18px 0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+    .search-box button:hover {
+      opacity: 0.93;
+    }
+
+    /* Сетка кнопок */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 28px;
+      max-width: 980px;
+      width: 100%;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 16px;
+      text-align: center;
+      text-decoration: none;
+      color: #2d3748;
+      box-shadow: 0 6px 22px rgba(106, 17, 203, 0.1);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s ease forwards;
+      min-height: 140px;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card:nth-child(n) { animation-delay: calc(0.1s * var(--i)); }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.02) !important;
+      box-shadow: 0 12px 30px rgba(106, 17, 203, 0.24);
+      color: #6a11cb;
+    }
+
+    .card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .icon {
+      font-size: 38px;
+      margin-bottom: 14px;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover .icon {
+      transform: scale(1.2) rotate(6deg);
+    }
+
+    .label {
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 1.4;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      text-align: center;
+    }
+
+    /* Пароли */
+    #passwords {
+      display: none;
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      max-width: 620px;
+      width: 100%;
+      margin-top: 20px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+    }
+
+    #passwords h3 {
+      margin-bottom: 20px;
+      color: #6a11cb;
+      text-align: center;
+      font-size: 20px;
+    }
+
+    .creds {
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 20px;
+      padding: 12px;
+      background: #f9fafc;
+      border-radius: 12px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .ctrl-btn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.3s;
+      font-size: 14px;
+    }
+
+    .export-btn {
+      background: linear-gradient(90deg, #00bfa5, #00c853);
+      color: white;
+    }
+    .import-btn {
+      background: linear-gradient(90deg, #6a11cb, #7e57c2);
+      color: white;
+    }
+    .add-btn {
+      background: linear-gradient(90deg, #ff6d00, #ffab00);
+      color: white;
+    }
+
+    .ctrl-btn:hover {
+      opacity: 0.92;
+    }
+
+    .toggle-btn {
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 18px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: opacity 0.3s, transform 0.3s;
+      box-shadow: 0 6px 20px rgba(106, 17, 203, 0.3);
+    }
+
+    .toggle-btn:hover {
+      opacity: 0.95;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      margin-top: 50px;
+      text-align: center;
+      font-size: 16px;
+      color: #7a8ca5;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .footer-line {
+      margin-top: 6px;
+      font-size: 15px;
+      color: #6a11cb;
+    }
+
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      h1 {
+        font-size: 28px;
+      }
+      .subtitle {
+        font-size: 16px;
+      }
+      .search-box {
+        flex-direction: column;
+      }
+      .search-box input {
+        border-radius: 18px;
+        margin-bottom: 10px;
+      }
+      .search-box button {
+        border-radius: 18px;
+        padding: 14px;
+      }
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deco top-left">● ◆ ▲ ■ ◯</div>
+  <div class="deco bottom-right">■ ▲ ◆ ● ◇</div>
+
+  <header>
+    <h1>Banda Vonyuchiy Veter</h1>
+    <div class="subtitle">Нажимай и всё будет красиво</div>
+  </header>
+
+  <div class="search-box">
+    <input type="text" id="search-input" placeholder="Поиск в Google...">
+    <button onclick="googleSearch()">🔍 Найти</button>
+  </div>
+
+  <div class="grid" id="link-grid"></div>
+
+  <button class="toggle-btn" onclick="togglePasswords()">🔒 Пароли компании</button>
+
+  <div id="passwords">
+    <h3>🔐 Доступ к сервисам</h3>
+    <div class="creds" id="creds-list"></div>
+    <div class="controls">
+      <button class="ctrl-btn export-btn" onclick="exportCredentials()">📤 Экспорт</button>
+      <button class="ctrl-btn import-btn" onclick="document.getElementById('import-file').click()">📥 Импорт</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importCredentials(event)">
+      <button class="ctrl-btn add-btn" onclick="addCredential()">+ Добавить</button>
+    </div>
+  </div>
+
+  <footer>
+    Блокчейн Пикчерс Представляет<br>
+    <span class="footer-line">Защищено правами мошенников 😈</span>
+  </footer>
+
+  <script>
+    const CORRECT_PIN = '131288';
+    const AUTO_HIDE_DELAY = 45000;
+    let passwordsVisible = false;
+    let hideTimeout = null;
+
+    // Только анонимная почта по умолчанию
+    const defaultCredentials = [
+      { service: "Анонимная почта", login: "Vrtak1488", password: "Bitcoin1312!" }
+    ];
+
+    function loadCredentials() {
+      const saved = localStorage.getItem('credentials');
+      return saved ? JSON.parse(saved) : defaultCredentials;
+    }
+
+    function saveCredentials(creds) {
+      localStorage.setItem('credentials', JSON.stringify(creds));
+    }
+
+    function renderCredentials() {
+      const creds = loadCredentials();
+      const list = document.getElementById('creds-list');
+      list.innerHTML = creds.map(c => 
+        `• ${c.service}: ${c.login} / ${c.password}<br>`
+      ).join('');
+    }
+
+    function togglePasswords() {
+      if (passwordsVisible) {
+        hidePasswords();
+        return;
+      }
+
+      const pin = prompt('Введите PIN-код для доступа к паролям:');
+      if (pin === CORRECT_PIN) {
+        showPasswords();
+      } else if (pin !== null) {
+        alert('Неверный PIN-код!');
+      }
+    }
+
+    function showPasswords() {
+      document.getElementById('passwords').style.display = 'block';
+      passwordsVisible = true;
+      renderCredentials();
+      if (hideTimeout) clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(hidePasswords, AUTO_HIDE_DELAY);
+    }
+
+    function hidePasswords() {
+      document.getElementById('passwords').style.display = 'none';
+      passwordsVisible = false;
+      if (hideTimeout) clearTimeout(hideTimeout);
+    }
+
+    function addCredential() {
+      const name = prompt("Название сервиса:");
+      const login = prompt("Логин:");
+      const pass = prompt("Пароль:");
+      if (!name || !login || !pass) return;
+      const creds = loadCredentials();
+      creds.push({ service: name, login, password: pass });
+      saveCredentials(creds);
+      renderCredentials();
+    }
+
+    function exportCredentials() {
+      const creds = loadCredentials();
+      const dataStr = JSON.stringify(creds, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'banda_veter_passwords.json';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+    }
+
+    function importCredentials(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const creds = JSON.parse(e.target.result);
+          if (Array.isArray(creds) && creds.every(c => c.service && c.login && c.password)) {
+            saveCredentials(creds);
+            renderCredentials();
+            alert('Данные успешно импортированы!');
+          } else {
+            alert('Неверный формат файла.');
+          }
+        } catch (err) {
+          alert('Ошибка при чтении файла.');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function googleSearch() {
+      const input = document.getElementById('search-input');
+      const q = input.value.trim();
+      if (q) {
+        window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank');
+        input.value = '';
+      } else {
+        window.open('  https://www.google.com  ', '_blank');
+      }
+    }
+
+    document.getElementById('search-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') googleSearch();
+    });
+
+    // Генерация кнопок
+    const links = [
+      { url: "https://mail.google.com  ", icon: "📧", label: "Моя почта (Gmail)" },
+      { url: "https://www.5ymail.com/  ", icon: "📬", label: "Анонимная почта" },
+      { url: "https://etherscan.io/  ", icon: "🔍", label: "Etherscan (блокчейн)" },
+      { url: "https://calculator888.ru/calculator-procentov  ", icon: "🧮", label: "Калькулятор %" },
+      { url: "https://elvioncrm3.pro/clients  ", icon: "💼", label: "ELVION CRM" },
+      { url: "https://european-lawyer.digital/html/AEL%20People.html  ", icon: "⚖️", label: "Юристы AEL" },
+      { url: "https://cuzk.gov.cz/  ", icon: "🏛️", label: "ČÚZK (кадастр)" },
+      { url: "https://chatgpt.com  ", icon: "🤖", label: "Помощник (AI)" },
+      { url: "https://chat.qwen.ai/  ", icon: "🌀", label: "Chat Qwen" },
+      { url: "https://meet.google.com  ", icon: "📹", label: "Google Meet" },
+      { url: "https://www.coinbase.com/ru/converter  ", icon: "💱", label: "Конвертер крипты" },
+      { url: "https://www.cysec.gov.cy/en-gb/home/  ", icon: "🛡️", label: "CySEC (регулятор)" },
+      { url: "https://wise.com/ru/currency-converter/czk-to-eur-rate?amount=26", icon: "🌐", label: "Конвертер CZK → EUR" },
+      { url: "https://crm-hades.com/  ", icon: "📊", label: "CRM Hades" }
+    ];
+
+    const grid = document.getElementById('link-grid');
+    links.forEach((link, i) => {
+      const a = document.createElement('a');
+      a.href = link.url;
+      a.target = '_blank';
+      a.className = 'card';
+      a.style.setProperty('--i', i + 1);
+      a.innerHTML = `<div class="icon">${link.icon}</div><div class="label">${link.label}</div>`;
+      grid.appendChild(a);
+    });
+  </script>
+
+</body>
+</html>
